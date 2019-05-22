@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>ǝʇʇnoɯ</title>
+    <link id="favicon" rel="shortcut icon" href="favicon.ico">
     <style media="screen">
       html {
         font-family: "Helvetica Neue", helvetica, sans-serif;
@@ -131,6 +132,7 @@
       var reload = document.getElementById("reload");
       var header = document.getElementById("header");
       var yes = document.getElementsByClassName("yes");
+      var favicon = document.getElementById("favicon");
       var degrees = 0; var x; var y; var mouseIsDown = false; var scale = 1; var touchingReset = false;
 
       function closeTooltip() {
@@ -143,6 +145,7 @@
           yes[i].innerHTML = "ǝʇʇnoɯ";
         }
         reload.style.display = "none";
+        favicon.href = "favicon.ico";
         image.style.transform = "rotate(0deg)";
         header.style.transform = "rotate(180deg)";
         header.innerHTML = "upside-down moutte";
@@ -157,6 +160,7 @@
           yes[i].innerHTML = "moutte";
         }
         degrees = 180;
+        favicon.href = "right.ico";
         reload.style.display = "block";
         header.style.transform = "rotate(360deg)";
         header.innerHTML = "right-side-up moutte";
