@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="html">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.2, maximum-scale=1.2, user-scalable=0">
+    <title>ǝʇʇnoɯ</title>
+    <link id="favicon" rel="shortcut icon" href="down.ico">
+    <style media="screen">
+      html {
+        font-family: "Helvetica Neue", helvetica, sans-serif;
+        cursor: all-scroll;
+        background-color: rgba(0, 0, 0, 0.7);
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-drag: none;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      .tooltip {
+        z-index: 1001;
+        background-color: white;
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
+        width: 150px;
+        height: 150px;
+        border-radius: 5px;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0 0 10px #8888;
+      }
+      h1, h2 {
+        font-size: 15px;
+        margin: 0;
+        padding: 0;
+      }
+      h2 {
+        user-select: none;
+      }
+      h2:hover {
+        cursor: pointer;
+      }
+      #header {
+        z-index: 1000;
+        color: white;
+        transform: rotate(180deg);
+        left: 30px;
+        top: 0;
+        font-size: 70px;
+        position: fixed;
+        width: 600px;
+        line-height: 60px;
+        user-drag: none;
+        user-select: none;
+        transition: ease 1s;
+        font-family: "Comic Sans MS", "Comic Sans", "Verdana", cursive;
+      }
+      p {
+        font-style: italic;
+        font-size: 10px;
+        padding-left: 5px;
+      }
+      .yes {
+        font-weight: 400;
+      }
+      ul {
+        margin-left: 25px;
+        margin-right: 5px;
+        padding: 0;
+        font-size: 10px;
+        list-style-position: outside;
+      }
+      .tooltip_top {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+        border-width: 0 0 1px 0;
+        border-style: solid;
+      }
+      #moutte {
+        height: 90vh;
+        width: auto;
+        user-drag: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        transition: ease 1s;
+      }
+      #reload {
+        width: 50px;
+        height: 50px;
+        display: none;
+        position: fixed;
+        left: 20px;
+        bottom: 20px;
+        z-index: 999;
+      }
+      #reload > img {
+        height: inherit;
+        width: inherit;
+        user-drag: none;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+      #reload:hover {
+        cursor: pointer;
+      }
+      @media (max-width: 600px) {
+        #moutte {
+          width: 80vw; height: auto;
+          transition: ease 0.5s;
+        } #header {
+          width: 250px;
+          font-size: 40px;
+          left: 5px;
+          line-height: 30px;
+        }
+        html {
+          overflow-x: hidden;
+        }
+      }
+
+    </style>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js" charset="utf-8"></script>
+  </head>
+  <body>
+    <h3 id="header">upside-down moutte</h3>
+    <div id="tooltip" class="tooltip">
+      <div class="tooltip_top">
+        <h1>How to use</h1>
+        <h2 onmouseup="closeTooltip()">×</h2>
+      </div>
+      <ul>
+        <li>Move the mouse around to explore the <b class="yes">ǝʇʇnoɯ</b></li>
+        <li>Click then drag up to get a closer look at the <b class="yes">ǝʇʇnoɯ</b></li>
+        <li>Double-click to turn your <b class="yes">ǝʇʇnoɯ</b> right side up</li>
+      </ul>
+      <p>more features coming soon.</p>
+    </div>
+    <img src="uhoh.jpg" alt="ǝʇʇnoɯ" id="moutte">
+    <div id="reload"><img src="reload.png" alt="Reload"></div>
+    <script type="text/javascript">
+      var html = document.getElementById("html");
+      var image = document.getElementById("moutte");
+      var reload = document.getElementById("reload");
+      var header = document.getElementById("header");
+      var yes = document.getElementsByClassName("yes");
+      var favicon = document.getElementById("favicon");
+      var hammertime = new Hammer(html);
+      var degrees = 0; var x = 0; var y = 0; var mouseIsDown = false; var scale = 1; var touchingReset = false; var upsideDown = true; var vwidth = window.innerWidth;
+
+      //touch control
+      hammertime.get('pinch').set({enable: true});
+      hammertime.on('pan', function(ev){
+        x += ev.deltaX / 10; y += ev.deltaY / 10;
+        image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
+      });
+      hammertime.on('pinch', function(ev){
+        console.log(ev);
+      })
+
+      function closeTooltip() {
+        document.getElementById("tooltip").style.display = "none";
+      }
+      //double click
+      html.ondblclick = function() {
+        if (upsideDown) {
+          image.style.transform = "rotate(180deg) scale(" + scale + ")";
+          document.title = "moutte";
+          for (var i = 0; i < yes.length; i++) {
+            yes[i].innerHTML = "moutte";
+          }
+          degrees = 180;
+          favicon.href = "right.ico";
+          header.style.transform = "rotate(360deg)";
+          header.innerHTML = "right-side-up moutte";
+          upsideDown = false;
+        } else {
+          console.log("hi");
+          document.title = "ǝʇʇnoɯ";
+          for (var i = 0; i < yes.length; i++) {
+            yes[i].innerHTML = "ǝʇʇnoɯ";
+          }
+          favicon.href = "down.ico";
+          image.style.transform = "rotate(0deg)";
+          header.style.transform = "rotate(180deg)";
+          header.innerHTML = "upside-down moutte";
+          degrees = 0;
+          scale = 1;
+          upsideDown = true;
+        }
+      }
+      //when mouse is pressed down
+      html.onmousedown = function() {
+        mouseIsDown = true;
+        html.cursor = "url(cursor.cur)";
+      }
+      html.onmouseup = function() {
+        mouseIsDown = false;
+        html.cursor = "auto";
+      }
+      reload.onmousedown = function() {
+        touchingReset = true;
+      }
+      reload.onmouseup = function() {
+        touchingReset = false;
+        unRotate()
+      }
+      //when mouse coordinates are changed
+      html.onmousemove = function() {
+        if (vwidth > 600) {
+          x = window.event.clientX;
+          y = window.event.clientY;
+          if (mouseIsDown && !touchingReset) {
+            scale = (((x^2 + y^2)^0.5) / window.innerHeight) * 3;
+            image.style.transform = "rotate(" + degrees + "deg) scale(" + scale + ")";
+          } else {
+            if (degrees == 0) {
+              image.style.transform = "rotate(" + degrees + "deg) translate(" + (x - (window.innerWidth / 2)) + "px ," + (y - (window.innerHeight / 2)) + "px) scale(" + scale + ")";
+              header.style.transform = "rotate(" + (degrees + 180) + ") translate(" + (x - (window.innerWidth / 2)) / 5 + "px ," + (y - (window.innerWidth / 2)) / 5 + ")";
+            } else if (degrees == 180) {
+              image.style.transform = "rotate(" + degrees + "deg) translate(" + (- (x - (window.innerWidth / 2))) + "px ," + (- (y - (window.innerHeight / 2))) + "px) scale("+ scale + ")";
+              header.style.transform = "rotate(" + (degrees + 180) + "deg) translate(" + (x - (window.innerwidth / 2)) / 5 + "px ," + (y - (window.innerwidth / 2)) / 5 + ")";
+            }
+          }
+          //console.log(x, y, mouseIsDown);
+        }
+      }
+    </script>
+  </body>
+</html>
