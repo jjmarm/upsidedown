@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr" id="html">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>ǝʇʇnoɯ</title>
     <link id="favicon" rel="shortcut icon" href="down.ico">
     <style media="screen">
@@ -18,6 +19,8 @@
         user-drag: none;
         user-select: none;
         -webkit-user-drag: none;
+        overflow-x: hidden;
+        overflow-y: hidden;
       }
       .tooltip {
         z-index: 1001;
@@ -43,7 +46,7 @@
       h2:hover {
         cursor: pointer;
       }
-      h3 {
+      #header {
         z-index: 1000;
         color: white;
         transform: rotate(180deg);
@@ -56,7 +59,7 @@
         user-drag: none;
         user-select: none;
         transition: ease 1s;
-        font-family: "Comic Sans MS", "Comic Sans";
+        font-family: "Comic Sans MS", "Comic Sans", "Verdana", cursive;
       }
       p {
         font-style: italic;
@@ -107,23 +110,41 @@
       #reload:hover {
         cursor: pointer;
       }
+      @media (max-width: 600px) {
+        #moutte {
+          width: 80vw; height: auto;
+          transition: ease 0.5s;
+        }
+        #header {
+          width: 300px;
+          font-size: 40px;
+          left: 10px;
+          line-height: 30px;
+          transition: ease 0.5s;
+        }
+        html {
+          overflow-x: hidden;
+          overflow-y: hidden;
+        }
+      }
 
     </style>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js" charset="utf-8"></script>
   </head>
+  <div id="tooltip" class="tooltip">
+    <div class="tooltip_top">
+      <h1>How to use</h1>
+      <h2 onmouseup="closeTooltip()">×</h2>
+    </div>
+    <ul id="howtouse">
+      <li>Move the mouse around to explore the <b class="yes">ǝʇʇnoɯ</b></li>
+      <li>Click then drag up to get a closer look at the <b class="yes">ǝʇʇnoɯ</b></li>
+      <li>Double-click to turn your <b class="yes">ǝʇʇnoɯ</b> right side up</li>
+    </ul>
+    <p>more features coming soon.</p>
+  </div>
   <body>
     <h3 id="header">upside-down moutte</h3>
-    <div id="tooltip" class="tooltip">
-      <div class="tooltip_top">
-        <h1>How to use</h1>
-        <h2 onmouseup="closeTooltip()">×</h2>
-      </div>
-      <ul>
-        <li>Move the mouse around to explore the <b class="yes">ǝʇʇnoɯ</b></li>
-        <li>Click then drag up to get a closer look at the <b class="yes">ǝʇʇnoɯ</b></li>
-        <li>Double-click to turn your <b class="yes">ǝʇʇnoɯ</b> right side up</li>
-      </ul>
-      <p>more features coming soon.</p>
-    </div>
     <img src="uhoh.jpg" alt="ǝʇʇnoɯ" id="moutte">
     <div id="reload"><img src="reload.png" alt="Reload"></div>
     <script type="text/javascript">
@@ -133,37 +154,117 @@
       var header = document.getElementById("header");
       var yes = document.getElementsByClassName("yes");
       var favicon = document.getElementById("favicon");
-      var degrees = 0; var x; var y; var mouseIsDown = false; var scale = 1; var touchingReset = false;
+      var howtouse = document.getElementById("howtouse");
+      var hammertime = new Hammer.Manager(html);
+      var degrees = 0; var x = 0; var y = 0; var mouseIsDown = false; var scale = 1; var touchingReset = false; var upsideDown = true; var vwidth = window.innerWidth;
+
+      if (vwidth <= 600) {
+        howtouse.innerHTML = `
+        <li>Drag around to explore the <b class='yes'>ǝʇʇnoɯ</b></li>
+        <li>Pinch in to get a closer look at the <b class='yes'>ǝʇʇnoɯ</b></li>
+        <li>Double-tap to turn your <b class='yes'>ǝʇʇnoɯ</b> right side up</li>
+        `
+      }
+
+      //touch control
+      document.addEventListener('gesturestart', function(e){
+        e.preventDefault();
+      });
+
+      // Tap recognizer with minimal 2 taps
+      hammertime.add( new Hammer.Tap({ event: 'doubletap', taps: 2 }) );
+      // Single tap recognizer
+      hammertime.add( new Hammer.Tap({ event: 'singletap' }) );
+      hammertime.add( new Hammer.Pan({event: 'pan'}));
+      hammertime.add( new Hammer.Pinch({event: 'pinch', enable: true}));
+
+      // we want to recognize this simulatenous, so a quadrupletap will be detected even while a tap has been recognized.
+      hammertime.get('doubletap').recognizeWith('singletap');
+      // we only want to trigger a tap, when we don't have detected a doubletap
+      hammertime.get('singletap').requireFailure('doubletap');
+
+      //hammertime.get('pinch').set({enable: true});
+      hammertime.on('pan', function(ev){
+        if (vwidth <= 600) {
+          x += ev.deltaX / 10; y += ev.deltaY / 10;
+          if (upsideDown) {
+            image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
+          } else {
+            image.style.transform = "rotate(" + degrees + "deg) translate(" + (-x) + "px ," + (-y) + "px) scale(" + scale + ")";
+          }
+        }
+      });
+      hammertime.on('pinch', function(ev){
+        scale += ev.scale;
+        image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
+
+      });
+
+      hammertime.on("doubletap", function(ev) {
+        ev.preventDefault();
+        if (vwidth <= 600) {
+          if (upsideDown) {
+            image.style.transform = "rotate(180deg) scale(" + scale + ")";
+            document.title = "moutte";
+            for (var i = 0; i < yes.length; i++) {
+              yes[i].innerHTML = "moutte";
+            }
+            degrees = 180;
+            favicon.href = "right.ico";
+            header.style.transform = "rotate(360deg)";
+            header.innerHTML = "right-side-up moutte";
+            upsideDown = false;
+          } else {
+            document.title = "ǝʇʇnoɯ";
+            for (var i = 0; i < yes.length; i++) {
+              yes[i].innerHTML = "ǝʇʇnoɯ";
+            }
+            favicon.href = "down.ico";
+            image.style.transform = "rotate(0deg)";
+            header.style.transform = "rotate(180deg)";
+            header.innerHTML = "upside-down moutte";
+            degrees = 0;
+            scale = 1;
+            upsideDown = true;
+          }
+        }
+      });
 
       function closeTooltip() {
         document.getElementById("tooltip").style.display = "none";
       }
-      function unRotate() {
-        console.log("hi");
-        document.title = "ǝʇʇnoɯ";
-        for (var i = 0; i < yes.length; i++) {
-          yes[i].innerHTML = "ǝʇʇnoɯ";
-        }
-        reload.style.display = "none";
-        favicon.href = "down.ico";
-        image.style.transform = "rotate(0deg)";
-        header.style.transform = "rotate(180deg)";
-        header.innerHTML = "upside-down moutte";
-        degrees = 0;
-        scale = 1;
+
+      html.ontouchend = function(e){
+        e.preventDefault();
       }
+
       //double click
       html.ondblclick = function() {
-        image.style.transform = "rotate(180deg) scale(" + scale + ")";
-        document.title = "moutte";
-        for (var i = 0; i < yes.length; i++) {
-          yes[i].innerHTML = "moutte";
+        if (upsideDown) {
+          image.style.transform = "rotate(180deg) scale(" + scale + ")";
+          document.title = "moutte";
+          for (var i = 0; i < yes.length; i++) {
+            yes[i].innerHTML = "moutte";
+          }
+          degrees = 180;
+          favicon.href = "right.ico";
+          header.style.transform = "rotate(360deg)";
+          header.innerHTML = "right-side-up moutte";
+          upsideDown = false;
+        } else {
+          console.log("hi");
+          document.title = "ǝʇʇnoɯ";
+          for (var i = 0; i < yes.length; i++) {
+            yes[i].innerHTML = "ǝʇʇnoɯ";
+          }
+          favicon.href = "down.ico";
+          image.style.transform = "rotate(0deg)";
+          header.style.transform = "rotate(180deg)";
+          header.innerHTML = "upside-down moutte";
+          degrees = 0;
+          scale = 1;
+          upsideDown = true;
         }
-        degrees = 180;
-        favicon.href = "right.ico";
-        reload.style.display = "block";
-        header.style.transform = "rotate(360deg)";
-        header.innerHTML = "right-side-up moutte";
       }
       //when mouse is pressed down
       html.onmousedown = function() {
@@ -183,21 +284,23 @@
       }
       //when mouse coordinates are changed
       html.onmousemove = function() {
-        x = window.event.clientX;
-        y = window.event.clientY;
-        if (mouseIsDown && !touchingReset) {
-          scale = (((x^2 + y^2)^0.5) / window.innerHeight) * 3;
-          image.style.transform = "rotate(" + degrees + "deg) scale(" + scale + ")";
-        } else {
-          if (degrees == 0) {
-            image.style.transform = "rotate(" + degrees + "deg) translate(" + (x - (window.innerWidth / 2)) + "px ," + (y - (window.innerHeight / 2)) + "px) scale(" + scale + ")";
-            header.style.transform = "rotate(" + (degrees + 180) + ") translate(" + (x - (window.innerwidth / 2)) / 5 + "px ," + (y - (window.innerwidth / 2)) / 5 + ")";
-          } else if (degrees == 180) {
-            image.style.transform = "rotate(" + degrees + "deg) translate(" + (- (x - (window.innerWidth / 2))) + "px ," + (- (y - (window.innerHeight / 2))) + "px) scale("+ scale + ")";
-            header.style.transform = "rotate(" + (degrees + 180) + "deg) translate(" + (x - (window.innerwidth / 2)) / 5 + "px ," + (y - (window.innerwidth / 2)) / 5 + ")";
+        if (vwidth > 600) {
+          x = window.event.clientX;
+          y = window.event.clientY;
+          if (mouseIsDown && !touchingReset) {
+            scale = (((x^2 + y^2)^0.5) / window.innerHeight) * 3;
+            image.style.transform = "rotate(" + degrees + "deg) scale(" + scale + ")";
+          } else {
+            if (degrees == 0) {
+              image.style.transform = "rotate(" + degrees + "deg) translate(" + (x - (window.innerWidth / 2)) + "px ," + (y - (window.innerHeight / 2)) + "px) scale(" + scale + ")";
+              header.style.transform = "rotate(" + (degrees + 180) + ") translate(" + (x - (window.innerWidth / 2)) / 5 + "px ," + (y - (window.innerWidth / 2)) / 5 + ")";
+            } else if (degrees == 180) {
+              image.style.transform = "rotate(" + degrees + "deg) translate(" + (- (x - (window.innerWidth / 2))) + "px ," + (- (y - (window.innerHeight / 2))) + "px) scale("+ scale + ")";
+              header.style.transform = "rotate(" + (degrees + 180) + "deg) translate(" + (x - (window.innerwidth / 2)) / 5 + "px ," + (y - (window.innerwidth / 2)) / 5 + ")";
+            }
           }
+          //console.log(x, y, mouseIsDown);
         }
-        //console.log(x, y, mouseIsDown);
       }
     </script>
   </body>
