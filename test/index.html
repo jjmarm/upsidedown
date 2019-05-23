@@ -221,6 +221,11 @@
       function closeTooltip() {
         document.getElementById("tooltip").style.display = "none";
       }
+
+      html.ontouchend = function(e){
+        e.preventDefault();
+      }
+
       //double click
       html.ondblclick = function() {
         if (upsideDown) {
