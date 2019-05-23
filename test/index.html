@@ -114,15 +114,17 @@
         #moutte {
           width: 80vw; height: auto;
           transition: ease 0.5s;
-        } #header {
-          width: 250px;
+        }
+        #header {
+          width: 300px;
           font-size: 40px;
-          left: 5px;
+          left: 10px;
           line-height: 30px;
           transition: ease 0.5s;
         }
         html {
           overflow-x: hidden;
+          overflow-y: hidden;
         }
       }
 
@@ -184,10 +186,16 @@
       //hammertime.get('pinch').set({enable: true});
       hammertime.on('pan', function(ev){
         x += ev.deltaX / 10; y += ev.deltaY / 10;
-        image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
+        if (upsideDown) {
+          image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
+        } else {
+          image.style.transform = "rotate(" + degrees + "deg) translate(" + (-x) + "px ," + (-y) + "px) scale(" + scale + ")";
+        }
       });
       hammertime.on('pinch', function(ev){
-        console.log(ev);
+        scale = ev.scale;
+        image.style.transform = "rotate(" + degrees + "deg) scale(" + scale + ")";
+
       });
 
       hammertime.on("doubletap", function(ev) {
