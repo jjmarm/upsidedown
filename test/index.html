@@ -19,6 +19,8 @@
         user-drag: none;
         user-select: none;
         -webkit-user-drag: none;
+        overflow-x: hidden;
+        overflow-y: hidden;
       }
       .tooltip {
         z-index: 1001;
@@ -117,6 +119,7 @@
           font-size: 40px;
           left: 5px;
           line-height: 30px;
+          transition: ease 0.5s;
         }
         html {
           overflow-x: hidden;
@@ -133,7 +136,7 @@
         <h1>How to use</h1>
         <h2 onmouseup="closeTooltip()">×</h2>
       </div>
-      <ul>
+      <ul id="howtouse">
         <li>Move the mouse around to explore the <b class="yes">ǝʇʇnoɯ</b></li>
         <li>Click then drag up to get a closer look at the <b class="yes">ǝʇʇnoɯ</b></li>
         <li>Double-click to turn your <b class="yes">ǝʇʇnoɯ</b> right side up</li>
@@ -149,18 +152,67 @@
       var header = document.getElementById("header");
       var yes = document.getElementsByClassName("yes");
       var favicon = document.getElementById("favicon");
-      var hammertime = new Hammer(html);
+      var howtouse = document.getElementById("howtouse");
+      var hammertime = new Hammer.Manager(html);
       var degrees = 0; var x = 0; var y = 0; var mouseIsDown = false; var scale = 1; var touchingReset = false; var upsideDown = true; var vwidth = window.innerWidth;
 
+      if (vwidth <= 600) {
+        howtouse.innerHTML = `
+        <li>Drag around to explore the <b class='yes'>ǝʇʇnoɯ</b></li>
+        <li>Pinch in to get a closer look at the <b class='yes'>ǝʇʇnoɯ</b></li>
+        <li>Double-tap to turn your <b class='yes'>ǝʇʇnoɯ</b> right side up</li>
+        `
+      }
+
       //touch control
-      hammertime.get('pinch').set({enable: true});
+
+      // Tap recognizer with minimal 2 taps
+      hammertime.add( new Hammer.Tap({ event: 'doubletap', taps: 2 }) );
+      // Single tap recognizer
+      hammertime.add( new Hammer.Tap({ event: 'singletap' }) );
+      hammertime.add( new Hammer.Pan({event: 'pan'}));
+      hammertime.add( new Hammer.Pinch({event: 'pinch', enable: true}));
+
+      // we want to recognize this simulatenous, so a quadrupletap will be detected even while a tap has been recognized.
+      hammertime.get('doubletap').recognizeWith('singletap');
+      // we only want to trigger a tap, when we don't have detected a doubletap
+      hammertime.get('singletap').requireFailure('doubletap');
+
+      //hammertime.get('pinch').set({enable: true});
       hammertime.on('pan', function(ev){
         x += ev.deltaX / 10; y += ev.deltaY / 10;
         image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
       });
       hammertime.on('pinch', function(ev){
         console.log(ev);
-      })
+      });
+
+      hammertime.on("doubletap", function(ev) {
+        if (upsideDown) {
+          image.style.transform = "rotate(180deg) scale(" + scale + ")";
+          document.title = "moutte";
+          for (var i = 0; i < yes.length; i++) {
+            yes[i].innerHTML = "moutte";
+          }
+          degrees = 180;
+          favicon.href = "right.ico";
+          header.style.transform = "rotate(360deg)";
+          header.innerHTML = "right-side-up moutte";
+          upsideDown = false;
+        } else {
+          document.title = "ǝʇʇnoɯ";
+          for (var i = 0; i < yes.length; i++) {
+            yes[i].innerHTML = "ǝʇʇnoɯ";
+          }
+          favicon.href = "down.ico";
+          image.style.transform = "rotate(0deg)";
+          header.style.transform = "rotate(180deg)";
+          header.innerHTML = "upside-down moutte";
+          degrees = 0;
+          scale = 1;
+          upsideDown = true;
+        }
+      });
 
       function closeTooltip() {
         document.getElementById("tooltip").style.display = "none";
