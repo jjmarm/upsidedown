@@ -191,6 +191,7 @@
       });
 
       hammertime.on("doubletap", function(ev) {
+        ev.preventDefault();
         if (upsideDown) {
           image.style.transform = "rotate(180deg) scale(" + scale + ")";
           document.title = "moutte";
