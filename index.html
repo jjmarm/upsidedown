@@ -135,7 +135,7 @@
   <div id="tooltip" class="tooltip">
     <div class="tooltip_top">
       <h1>How to use</h1>
-      <h2 onmouseup="closeTooltip()">×</h2>
+      <h2 onmouseup="closeTooltip()" onclick="closeTooltip()">×</h2>
     </div>
     <ul id="howtouse">
       <li>Move the mouse around to explore the <b class="yes">ǝʇʇnoɯ</b></li>
@@ -198,9 +198,9 @@
       });
       hammertime.on('pinch', function(ev){
         if(ev.scale > 1) {
-          scale += ev.scale;
+          scale += (ev.scale - 1);
         } else {
-          scale -= (ev.scale)^(-1);
+          scale -= ev.scale;
         }
         image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
 
