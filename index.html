@@ -197,7 +197,11 @@
         }
       });
       hammertime.on('pinch', function(ev){
-        scale += ev.scale;
+        if(ev.scale > 1) {
+          scale += ev.scale;
+        } else {
+          scale -= (ev.scale)^(-1);
+        }
         image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
 
       });
