@@ -198,10 +198,11 @@
       });
       hammertime.on('pinch', function(ev){
         if(ev.scale > 1) {
-          scale += (ev.scale - 1);
+          scale += (ev.scale - 1)/2;
         } else {
-          scale -= ev.scale;
+          scale -= ev.scale/2;
         }
+        scale = Math.abs(scale);
         image.style.transform = "rotate(" + degrees + "deg) translate(" + x + "px ," + y + "px) scale(" + scale + ")";
 
       });
