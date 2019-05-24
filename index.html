@@ -8,7 +8,7 @@
     <style media="screen">
       html {
         font-family: "Helvetica Neue", helvetica, sans-serif;
-        cursor: all-scroll;
+        cursor: url(down_cursor.png), auto;
         background-color: rgba(0, 0, 0, 0.7);
         overflow: hidden;
         height: 100%;
@@ -156,6 +156,7 @@
       var favicon = document.getElementById("favicon");
       var howtouse = document.getElementById("howtouse");
       var hammertime = new Hammer.Manager(html);
+      var prevCursor = html.style.cursor;
       var degrees = 0; var x = 0; var y = 0; var mouseIsDown = false; var scale = 1; var touchingReset = false; var upsideDown = true; var vwidth = window.innerWidth;
 
       if (vwidth <= 600) {
@@ -250,6 +251,8 @@
           favicon.href = "right.ico";
           header.style.transform = "rotate(360deg)";
           header.innerHTML = "right-side-up moutte";
+          html.style.cursor = "url(right_cursor.png), auto";
+          prevCursor = "url(right_cursor.png), auto";
           upsideDown = false;
         } else {
           console.log("hi");
@@ -261,6 +264,8 @@
           image.style.transform = "rotate(0deg)";
           header.style.transform = "rotate(180deg)";
           header.innerHTML = "upside-down moutte";
+          html.style.cursor = "url(down_cursor.png), auto";
+          prevCursor = "url(down_cursor.png), auto";
           degrees = 0;
           scale = 1;
           upsideDown = true;
@@ -269,11 +274,9 @@
       //when mouse is pressed down
       html.onmousedown = function() {
         mouseIsDown = true;
-        html.cursor = "url(cursor.cur)";
       }
       html.onmouseup = function() {
         mouseIsDown = false;
-        html.cursor = "auto";
       }
       reload.onmousedown = function() {
         touchingReset = true;
@@ -288,6 +291,11 @@
           x = window.event.clientX;
           y = window.event.clientY;
           if (mouseIsDown && !touchingReset) {
+            if ((scale - (((x^2 + y^2)^0.5) / window.innerHeight) * 3 ) > 0) {
+              html.style.cursor = "url(zoom_in.png), auto";
+            } else {
+              html.style.cursor = "url(zoom_out.png), auto";
+            }
             scale = (((x^2 + y^2)^0.5) / window.innerHeight) * 3;
             image.style.transform = "rotate(" + degrees + "deg) scale(" + scale + ")";
           } else {
@@ -298,6 +306,7 @@
               image.style.transform = "rotate(" + degrees + "deg) translate(" + (- (x - (window.innerWidth / 2))) + "px ," + (- (y - (window.innerHeight / 2))) + "px) scale("+ scale + ")";
               header.style.transform = "rotate(" + (degrees + 180) + "deg) translate(" + (x - (window.innerwidth / 2)) / 5 + "px ," + (y - (window.innerwidth / 2)) / 5 + ")";
             }
+            html.style.cursor = prevCursor;
           }
           //console.log(x, y, mouseIsDown);
         }
